@@ -37,6 +37,25 @@ def submit_response():
     }
     responses.append(response_data)
     return jsonify({"status": "success", "message": "Response submitted"})
+import csv
+
+@app.route("/api/submit_response", methods=["POST"])
+def submit_response():
+    data = request.json
+    response_data = {
+        "timestamp": get_timestamp(),
+        "device": get_device_info(request),
+        "response": data
+    }
+    responses.append(response_data)
+
+    # Save to CSV
+    with open("data/responses.csv", mode="a", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerow([response_data["timestamp"], str(response_data["device"]), str(data)])
+
+    return jsonify({"status": "success", "message": "Response submitted"})
+
 
 @app.route("/api/suggest_follow_up", methods=["POST"])
 def suggest_follow_up():
